@@ -3,34 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Calcolatore Tassa Archivio - PRO</title>
+    <title>Calcolo Tassa Archivio - Studio de Luca / Limosani</title>
     <style>
         :root { --primary: #2c3e50; --accent: #c0392b; --blue: #2980b9; --bg: #f8f9fa; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: #333; padding: 15px; margin: 0; }
-        .container { max-width: 550px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h1 { font-size: 1rem; text-align: center; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        .container { max-width: 550px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; padding-bottom: 60px; }
+        
+        header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--accent); padding-bottom: 15px; }
+        h1 { font-size: 1.8rem; margin: 0; color: var(--primary); font-weight: 800; }
+        h2 { font-size: 1rem; margin: 5px 0 0 0; color: #666; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+        
         label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.85rem; color: #555; }
         select, input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        
         .btn-forma { display: flex; gap: 8px; margin-top: 10px; }
         .btn-forma input { display: none; }
         .btn-forma label { flex: 1; background: #eee; padding: 12px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: bold; border: 1px solid #ddd; }
         .btn-forma input:checked + label { background: var(--primary); color: white; border-color: var(--primary); }
+
         .calc-box { margin-top: 25px; border: 1px solid #eee; padding: 20px; border-radius: 10px; background: #fff; }
         .onorario-ref { color: var(--accent); font-weight: bold; text-align: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 0.95rem; }
+        
         .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; border-bottom: 1px solid #f9f9f9; }
         .bold-row { font-weight: 800; font-size: 1.05rem; margin-top: 8px; color: #000; }
         .math-line { border-top: 2px solid #000; margin: 15px 0 10px 0; }
         .grand-total { display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: 900; color: var(--accent); }
+
+        footer { position: absolute; bottom: 15px; left: 0; width: 100%; text-align: center; font-size: 0.7rem; color: #999; font-style: italic; }
+        
         .btn-group { display: flex; gap: 10px; margin-top: 25px; }
         .share-btn { flex: 2; background: var(--blue); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .reset-btn { flex: 1; background: #95a5a6; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        @media print { .no-print { display: none !important; } .container { box-shadow: none; border: none; } }
+
+        @media print {
+            .no-print, .btn-group { display: none !important; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 class="no-print">Calcolo Tassa Archivio</h1>
+    <header>
+        <h1>CALCOLO TASSA ARCHIVIO</h1>
+        <h2>Studio Notarile Associato de Luca / Limosani</h2>
+    </header>
 
     <div class="no-print">
         <div class="btn-forma">
@@ -48,17 +65,11 @@
                 <option value="50%">Cancellazione Ipoteca / Quietanza (50%)</option>
                 <option value="70%">Compravendita Prezzo-Valore (70%)</option>
                 <option value="100%">Compravendita Standard / PEEP (100%)</option>
-                <option value="100%">Costituzione Società / Capitali / Persone (100%)</option>
-                <option value="100%">Divisione Immobiliare / Eredità (100%)</option>
-                <option value="100%">Donazione Immobili / Azienda (100%)</option>
-                <option value="FISSO_74">Fondo Patrimoniale (€ 74,00)</option>
-                <option value="50%">Mutuo Fondiario / Agrario (50%)</option>
+                <option value="100%">Divisione Immobiliare (100%)</option>
+                <option value="50%">Mutuo Fondiario (50%)</option>
                 <option value="100%">Mutuo Ipotecario Ordinario (100%)</option>
                 <option value="FISSO_19">Procura Speciale Immobiliare (€ 19,00)</option>
-                <option value="FISSO_37">Procura Generale (€ 37,00)</option>
-                <option value="FISSO_37">Rettifica Errore Materiale (€ 37,00)</option>
                 <option value="FISSO_186">Verbale Assemblea Straordinaria (€ 186,00)</option>
-                <option value="FISSO_74">Verbale Pubbl. Testamento (€ 74,00)</option>
             </optgroup>
             <optgroup label="Percentuali di Base">
                 <option value="100%">Misura Intera (100%)</option>
@@ -69,14 +80,14 @@
             </optgroup>
         </select>
 
-        <div id="valoreInputArea">
+        <div id="valoreArea">
             <label>Valore Atto o Ipoteca (€)</label>
             <input type="text" id="valoreAtto" placeholder="es. 150.000,00">
         </div>
     </div>
 
     <div class="calc-box">
-        <div id="onorarioLabel" class="onorario-ref">Inserisci il valore per il calcolo</div>
+        <div id="onorarioLabel" class="onorario-ref">Seleziona un atto o inserisci un valore</div>
         <div id="displayRisultati"></div>
     </div>
 
@@ -84,6 +95,8 @@
         <button class="share-btn" onclick="window.print()">STAMPA / CONDIVIDI PDF</button>
         <button class="reset-btn" onclick="window.location.reload()">RESET</button>
     </div>
+
+    <footer>App by Pasquale Barone</footer>
 </div>
 
 <script>
@@ -94,4 +107,14 @@
         {max: 74400, h: { "100%": 354, "70%": 248, "50%": 177, "25%": 89 }, c: 0.42},
         {max: 93000, h: { "100%": 400, "70%": 280, "50%": 200, "25%": 100 }, c: 0.42},
         {max: 139500, h: { "100%": 434, "70%": 304, "50%": 217, "25%": 109 }, c: 0.42},
-        {max: 186000
+        {max: 186000, h: { "100%": 480, "70%": 336, "50%": 240, "25%": 120 }, c: 0.42},
+        {max: 232400, h: { "100%": 514, "70%": 360, "50%": 257, "25%": 129 }, c: 0.42},
+        {max: 280000, h: { "100%": 560, "70%": 392, "50%": 280, "25%": 140 }, c: 0.42},
+        {max: 370000, h: { "100%": 594, "70%": 416, "50%": 297, "25%": 149 }, c: 0.42},
+        {max: 465000, h: { "100%": 674, "70%": 472, "50%": 337, "25%": 169 }, c: 0.42},
+        {max: 695000, h: { "100%": 754, "70%": 528, "50%": 377, "25%": 189 }, c: 0.42},
+        {max: 930000, h: { "100%": 879, "70%": 615, "50%": 440, "25%": 220 }, c: 0.42},
+        {max: 1162000, h: { "100%": 948, "70%": 664, "50%": 474, "25%": 237 }, c: 0.42},
+        {max: 1395000, h: { "100%": 1028, "70%": 720, "50%": 514, "25%": 257 }, c: 0.42},
+        {max: 1625000, h: { "100%": 1074, "70%": 752, "50%": 537, "25%": 269 }, c: 0.42},
+        {max: 1860000, h
