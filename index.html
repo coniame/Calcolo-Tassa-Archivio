@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Tassa Notaio">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2666/2666505.png">
     <link rel="manifest" href="manifest.json">
-
     <title>Calcolatore Repertorio PRO</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #e67e22; --danger: #e74c3c; --success: #27ae60; }
+        :root { --primary: #2c3e50; --accent: #e67e22; --danger: #e74c3c; --success: #27ae60; --blue: #2980b9; }
         body { font-family: -apple-system, system-ui, sans-serif; background: #f0f3f5; padding: 15px; margin: 0; padding-top: env(safe-area-inset-top); }
         .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         h1 { font-size: 0.9rem; text-align: center; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px; }
@@ -29,14 +26,15 @@
         .btn-forma input:checked + label { background: var(--primary); color: white; font-weight: bold; }
 
         .red-label { color: var(--danger); font-size: 0.75rem; font-weight: bold; display: block; margin-top: 5px; }
-        .blue-alert { background: #eef7ff; color: #2980b9; padding: 10px; border-radius: 8px; font-size: 0.75rem; margin-top: 10px; border-left: 4px solid #2980b9; font-weight: 500; }
+        .blue-alert { background: #eef7ff; color: var(--blue); padding: 10px; border-radius: 8px; font-size: 0.75rem; margin-top: 10px; border-left: 4px solid var(--blue); font-weight: 500; }
         
-        #tassa-display { text-align: center; padding: 20px 0; }
+        #tassa-display { text-align: center; padding: 15px 0; }
         .big-price { font-size: 3.2rem; font-weight: 800; color: var(--accent); display: block; line-height: 1; margin: 10px 0; }
         
         .details-box { background: #f8f9fa; padding: 15px; border-radius: 10px; font-size: 0.8rem; color: #666; margin-top: 15px; border: 1px solid #eee; }
-        .override-section { background: #fff9f0; padding: 15px; border-radius: 10px; border: 1px dashed var(--accent); margin-top: 10px; }
+        .override-section { background: #fffcf5; padding: 15px; border-radius: 10px; border: 1px dashed var(--accent); margin-top: 10px; }
         
+        .manual-perc-box { background: #e8f4fd; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--blue); }
         .reset-btn { width: 100%; background: #95a5a6; color: white; border: none; padding: 10px; border-radius: 8px; margin-top: 20px; font-size: 0.8rem; font-weight: bold; }
     </style>
 </head>
@@ -53,6 +51,16 @@
     <label>Tipo di Atto</label>
     <select id="tipoAtto"></select>
 
+    <div id="manualPercContainer" class="manual-perc-box" style="display:none;">
+        <label style="margin-top:0; color: var(--blue);">Seleziona Percentuale Riduzione</label>
+        <select id="manualPercChoice">
+            <option value="100%">Misura Intera (100%)</option>
+            <option value="70%">Prezzo-Valore (70%)</option>
+            <option value="50%">Riduzione 50%</option>
+            <option value="25%">Riduzione 75% (Paga 25%)</option>
+        </select>
+    </div>
+
     <label>Valore Atto / Ipoteca (€)</label>
     <input type="number" id="valoreAtto" inputmode="decimal" placeholder="Inserisci importo...">
     <span id="hintMutuo" class="blue-alert" style="display:none;">ℹ️ Inserire il VALORE IPOTECARIO (non l'erogato)</span>
@@ -64,12 +72,12 @@
     </div>
 
     <div class="override-section">
-        <label style="margin:0; color: var(--accent);">Variazione Manuale (€)</label>
-        <input type="number" id="manualTassa" inputmode="decimal" placeholder="Modifica valore...">
-        <textarea id="note" rows="2" placeholder="Note sulla variazione (es. accordi col notaio)..." style="margin-top:10px"></textarea>
+        <label style="margin:0; color: var(--accent);">Variazione Manuale Tassa (€)</label>
+        <input type="number" id="manualTassa" inputmode="decimal" placeholder="Sovrascrivi valore...">
+        <textarea id="note" rows="2" placeholder="Note sulla variazione (es. atto al 25%)..." style="margin-top:10px"></textarea>
     </div>
 
-    <div id="details" class="details-box">Inserisci i dati per il calcolo...</div>
+    <div id="details" class="details-box">Inserisci i dati...</div>
     
     <button class="reset-btn" onclick="window.location.reload()">RESET CALCOLO</button>
 </div>
@@ -83,34 +91,45 @@
         {n: "Mutuo Ipotecario ordinario", p: "100%"},
         {n: "Divisione Immobiliare", p: "50%"},
         {n: "Donazione", p: "100%"},
-        {n: "Rettifica", p: "50%"}
+        {n: "Rettifica", p: "50%"},
+        {n: "Altro Atto (Seleziona %)", p: "MANUALE"}
     ];
 
-    // Dati reali scaglioni estratti dai tuoi CSV
     const scaglioni = [
-        {max: 37000, val: {"100%": 275, "70%": 193, "50%": 138}},
-        {max: 55800, val: {"100%": 320, "70%": 224, "50%": 160}},
-        {max: 74400, val: {"100%": 354, "70%": 248, "50%": 177}},
-        {max: 93000, val: {"100%": 387, "70%": 271, "50%": 194}},
-        {max: 139500, val: {"100%": 468, "70%": 328, "50%": 234}},
-        {max: 186000, val: {"100%": 560, "70%": 392, "50%": 280}},
-        {max: 232400, val: {"100%": 612, "70%": 428, "50%": 306}},
-        {max: 99999999, val: {"100%": 910, "70%": 637, "50%": 455}}
+        {max: 37000, val: {"100%": 275, "70%": 193, "50%": 138, "25%": 69}},
+        {max: 55800, val: {"100%": 320, "70%": 224, "50%": 160, "25%": 80}},
+        {max: 74400, val: {"100%": 354, "70%": 248, "50%": 177, "25%": 89}},
+        {max: 93000, val: {"100%": 387, "70%": 271, "50%": 194, "25%": 97}},
+        {max: 139500, val: {"100%": 468, "70%": 328, "50%": 234, "25%": 117}},
+        {max: 186000, val: {"100%": 560, "70%": 392, "50%": 280, "25%": 140}},
+        {max: 232400, val: {"100%": 612, "70%": 428, "50%": 306, "25%": 153}},
+        {max: 99999999, val: {"100%": 910, "70%": 637, "50%": 455, "25%": 227}}
     ];
 
     const sel = document.getElementById('tipoAtto');
+    const manualPercContainer = document.getElementById('manualPercContainer');
+    const manualPercChoice = document.getElementById('manualPercChoice');
+
     atti.forEach(a => {
         let o = document.createElement('option');
-        o.value = a.p; o.textContent = `${a.n} [${a.p}]`;
+        o.value = a.p; o.textContent = (a.p === "MANUALE") ? a.n : `${a.n} [${a.p}]`;
         sel.appendChild(o);
     });
 
     function update() {
         const v = parseFloat(document.getElementById('valoreAtto').value) || 0;
-        const p = sel.value;
+        let p = sel.value;
         const f = document.querySelector('input[name="forma"]:checked').value;
-        const manual = document.getElementById('manualTassa').value;
+        const manualVal = document.getElementById('manualTassa').value;
         
+        // Gestione scelta manuale percentuale
+        if (p === "MANUALE") {
+            manualPercContainer.style.display = "block";
+            p = manualPercChoice.value;
+        } else {
+            manualPercContainer.style.display = "none";
+        }
+
         document.getElementById('hintMutuo').style.display = sel.options[sel.selectedIndex].text.includes("Mutuo") ? "block" : "none";
 
         let s = scaglioni.find(x => v <= x.max) || scaglioni[scaglioni.length-1];
@@ -121,15 +140,15 @@
         document.getElementById('onorarioRed').textContent = `Onorario di riferimento: ${onorario.toFixed(2).replace('.',',')} €`;
         
         const display = document.getElementById('tassaMain');
-        if (!manual) {
+        if (!manualVal) {
             display.textContent = tassa.toFixed(2).replace('.', ',') + " €";
             display.style.color = "var(--accent)";
         } else {
-            display.textContent = parseFloat(manual).toFixed(2).replace('.', ',') + " €";
+            display.textContent = parseFloat(manualVal).toFixed(2).replace('.', ',') + " €";
             display.style.color = "var(--success)";
         }
 
-        document.getElementById('details').innerHTML = `<b>Info:</b> Calcolato su scaglione fino a € ${s.max.toLocaleString('it-IT')}.<br>Cassa Notariato stima: ${(onorario * 0.42).toFixed(2)} €`;
+        document.getElementById('details').innerHTML = `<b>Info:</b> Applicata riduzione ${p}.<br>Cassa Notariato stima (42%): ${(onorario * 0.42).toFixed(2)} €`;
     }
 
     document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', update));
