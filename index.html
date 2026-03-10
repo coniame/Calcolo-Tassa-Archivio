@@ -3,44 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Calcolatore Repertorio PRO - Versione Integrale</title>
+    <title>Calcolatore Repertorio Notarile PRO</title>
     <style>
         :root { --primary: #2c3e50; --accent: #c0392b; --blue: #2980b9; --bg: #f8f9fa; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: #333; padding: 15px; margin: 0; }
         .container { max-width: 550px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        
         h1 { font-size: 1rem; text-align: center; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        
-        .no-print { display: block; }
         label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.85rem; color: #555; }
-        
         select, input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        
         .btn-forma { display: flex; gap: 8px; margin-top: 10px; }
         .btn-forma input { display: none; }
-        .btn-forma label { flex: 1; background: #eee; padding: 12px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 0.75rem; font-weight: bold; border: 1px solid #ddd; }
+        .btn-forma label { flex: 1; background: #eee; padding: 12px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: bold; border: 1px solid #ddd; }
         .btn-forma input:checked + label { background: var(--primary); color: white; border-color: var(--primary); }
-
         .calc-box { margin-top: 25px; border: 1px solid #eee; padding: 20px; border-radius: 10px; background: #fff; }
         .onorario-ref { color: var(--accent); font-weight: bold; text-align: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 0.95rem; }
-        
         .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; border-bottom: 1px solid #f9f9f9; }
-        .bold-row { font-weight: 800; font-size: 1.05rem; margin-top: 8px; color: #000; border: none; }
+        .bold-row { font-weight: 800; font-size: 1.05rem; margin-top: 8px; color: #000; }
         .math-line { border-top: 2px solid #000; margin: 15px 0 10px 0; }
-        .grand-total { display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: 900; color: var(--accent); padding-top: 5px; }
-
+        .grand-total { display: flex; justify-content: space-between; font-size: 1.6rem; font-weight: 900; color: var(--accent); }
         .btn-group { display: flex; gap: 10px; margin-top: 25px; }
         .share-btn { flex: 2; background: var(--blue); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .reset-btn { flex: 1; background: #95a5a6; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-        @media print {
-            .no-print, .btn-group, .btn-forma, h1 { display: none !important; }
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; }
-            .calc-box { border: 1px solid #000; padding: 30px; }
-            .grand-total { color: black; border-top: 2px solid #000; margin-top: 20px; }
-            .container::before { content: "RIEPILOGO CONTEGGIO REPERTORIO NOTARILE"; display: block; text-align: center; font-weight: bold; margin-bottom: 30px; font-size: 1.2rem; }
-        }
+        @media print { .no-print { display: none !important; } .container { box-shadow: none; border: none; } }
     </style>
 </head>
 <body>
@@ -57,37 +41,37 @@
         <label>Tipo di Atto (dal Prontuario)</label>
         <select id="tipoAtto">
             <optgroup label="Atti Frequenti">
-                <option value="FISSO_37">Accettazione Espressa di Eredità (€ 37)</option>
+                <option value="FISSO_37">Accettazione Espressa di Eredità (€ 37,00)</option>
                 <option value="25%">Assegnazione Alloggio Cooperativa ERP (25%)</option>
-                <option value="FISSO_74">Atto d'Obbligo verso P.A. (€ 74)</option>
-                <option value="FISSO_37">Atto di Notorietà (€ 37)</option>
+                <option value="FISSO_74">Atto d'Obbligo verso P.A. (€ 74,00)</option>
+                <option value="FISSO_37">Atto di Notorietà (€ 37,00)</option>
                 <option value="50%">Cancellazione Ipoteca / Quietanza (50%)</option>
                 <option value="70%">Compravendita Prezzo-Valore (70%)</option>
-                <option value="100%">Compravendita Standard / PEEP (100% )</option>
+                <option value="100%">Compravendita Standard / PEEP (100%)</option>
                 <option value="100%">Costituzione Società / Capitali / Persone (100%)</option>
                 <option value="100%">Divisione Immobiliare / Eredità (100%)</option>
                 <option value="100%">Donazione Immobili / Azienda (100%)</option>
-                <option value="FISSO_74">Fondo Patrimoniale (€ 74)</option>
+                <option value="FISSO_74">Fondo Patrimoniale (€ 74,00)</option>
                 <option value="50%">Mutuo Fondiario / Agrario (50%)</option>
                 <option value="100%">Mutuo Ipotecario Ordinario (100%)</option>
-                <option value="FISSO_19">Procura Speciale Immobiliare (€ 19)</option>
-                <option value="FISSO_37">Procura Generale (€ 37)</option>
-                <option value="FISSO_37">Rettifica Errore Materiale (€ 37)</option>
-                <option value="FISSO_186">Verbale Assemblea Straordinaria (€ 186)</option>
-                <option value="FISSO_74">Verbale Pubbl. Testamento (€ 74)</option>
+                <option value="FISSO_19">Procura Speciale Immobiliare (€ 19,00)</option>
+                <option value="FISSO_37">Procura Generale (€ 37,00)</option>
+                <option value="FISSO_37">Rettifica Errore Materiale (€ 37,00)</option>
+                <option value="FISSO_186">Verbale Assemblea Straordinaria (€ 186,00)</option>
+                <option value="FISSO_74">Verbale Pubbl. Testamento (€ 74,00)</option>
             </optgroup>
-            <optgroup label="--------------------------">
+            <optgroup label="Percentuali di Base">
                 <option value="100%">Misura Intera (100%)</option>
                 <option value="70%">Riduzione Prezzo-Valore (70%)</option>
                 <option value="50%">Riduzione 50%</option>
                 <option value="25%">Riduzione 75% (paga 25%)</option>
-                <option value="FISSO_91">Onorario Fisso Standard (€ 91)</option>
+                <option value="FISSO_91">Onorario Fisso Standard (€ 91,00)</option>
             </optgroup>
         </select>
 
-        <div id="valoreRow">
+        <div id="valoreInputArea">
             <label>Valore Atto o Ipoteca (€)</label>
-            <input type="text" id="valoreAtto" placeholder="es. 150.000,00" oninput="formatInput(this)">
+            <input type="text" id="valoreAtto" placeholder="es. 150.000,00">
         </div>
     </div>
 
@@ -103,8 +87,11 @@
 </div>
 
 <script>
+    // Database scaglioni integrali dai CSV caricati
     const SCAGLIONI_PUB = [
         {max: 37000, h: { "100%": 275, "70%": 193, "50%": 138, "25%": 69 }, c: 0.22},
         {max: 55800, h: { "100%": 320, "70%": 224, "50%": 160, "25%": 80 }, c: 0.42},
         {max: 74400, h: { "100%": 354, "70%": 248, "50%": 177, "25%": 89 }, c: 0.42},
-        {max: 93000, h: { "100%": 400, "70%": 280, "50%": 200, "2
+        {max: 93000, h: { "100%": 400, "70%": 280, "50%": 200, "25%": 100 }, c: 0.42},
+        {max: 139500, h: { "100%": 434, "70%": 304, "50%": 217, "25%": 109 }, c: 0.42},
+        {max: 186000
