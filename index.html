@@ -25,7 +25,7 @@
         .info-header { font-size: 0.75rem; color: #666; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 8px; text-transform: uppercase; }
         .onorario-label { color: var(--accent); font-weight: 900; text-align: center; margin-bottom: 10px; font-size: 0.9rem; }
         
-        /* Layout richiesto: descrizione a sinistra, importo a destra */
+        /* Struttura Addizione: Testo a sinistra, Valore a destra */
         .row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8rem; border-bottom: 1px solid #f2f2f2; }
         .bold-row { font-weight: 800; font-size: 0.85rem; margin-top: 5px; color: #000; border-bottom: none; }
         .math-line { border-top: 2px solid #000; margin: 10px 0 5px 0; }
@@ -59,60 +59,38 @@
             <input type="radio" name="forma" id="priv" value="priv"><label for="priv">SCRITTURA PRIVATA</label>
         </div>
 
-        <label>Tipo di Atto / Percentuale</label>
-        <select id="tipoAtto">
-            <optgroup label="Atti Frequenti">
-                <option value="100%">Atto di Donazione (100%)</option>
-                <option value="70%">Compravendita Prezzo-Valore (70%)</option>
-                <option value="50%">Mutuo Fondiario (50%)</option>
-                <option value="FISSO_37">Accettazione Eredità (€ 37,00)</option>
-                <option value="FISSO_74">Atto d'Obbligo P.A. (€ 74,00)</option>
-            </optgroup>
-            <optgroup label="Percentuali di Base">
-                <option value="100%">Misura Intera (100%)</option>
-                <option value="70%">Misura Ridotta (70%)</option>
-                <option value="50%">Riduzione 50%</option>
-                <option value="25%">Riduzione 25%</option>
-            </optgroup>
-        </select>
-
-        <label>Valore Atto / Ipoteca (€)</label>
-        <input type="text" id="valoreInput" placeholder="es. 150.000">
-    </div>
-
-    <div class="calc-box">
-        <div id="headerAtto" class="info-header">Configura i parametri</div>
-        <div id="onorarioRif" class="onorario-label"></div>
-        <div id="risultatiCorpo"></div>
-    </div>
-
-    <div class="btn-group no-print">
-        <button class="share-btn" onclick="window.print()">CONDIVIDI PDF</button>
-        <button class="reset-btn" onclick="window.location.reload()">RESET CALCOLO</button>
-    </div>
-
-    <footer>
-        <span class="signature">by Pasquale Barone ©</span>
-    </footer>
-</div>
-
-<script>
-    // Database scaglioni integrali basati sui file CSV caricati
-    const PUB = [
-        {max: 37000, h:{"100%":275, "70%":193, "50%":138, "25%":69}, c:0.22},
-        {max: 55800, h:{"100%":320, "70%":224, "50%":160, "25%":80}, c:0.42},
-        {max: 74400, h:{"100%":354, "70%":248, "50%":177, "25%":89}, c:0.42},
-        {max: 93000, h:{"100%":400, "70%":280, "50%":200, "25%":100}, c:0.42},
-        {max: 139500, h:{"100%":434, "70%":304, "50%":217, "25%":109}, c:0.42},
-        {max: 186000, h:{"100%":480, "70%":336, "50%":240, "25%":120}, c:0.42},
-        {max: 232400, h:{"100%":514, "70%":360, "50%":257, "25%":129}, c:0.42},
-        {max: 280000, h:{"100%":560, "70%":392, "50%":280, "25%":140}, c:0.42},
-        {max: 370000, h:{"100%":594, "70%":416, "50%":297, "25%":149}, c:0.42},
-        {max: 465000, h:{"100%":674, "70%":472, "50%":337, "25%":169}, c:0.42},
-        {max: 695000, h:{"100%":754, "70%":528, "50%":377, "25%":189}, c:0.42},
-        {max: 930000, h:{"100%": 879, "70%":615, "50%":440, "25%":220}, c:0.42},
-        {max: 1162000, h:{"100%":948, "70%":664, "50%":474, "25%":237}, c:0.42},
-        {max: 1395000, h:{"100%":1028, "70%":720, "50%":514, "25%":257}, c:0.42},
-        {max: 1625000, h:{"100%":1074, "70%":752, "50%":537, "25%":269}, c:0.42},
-        {max: 1860000, h:{"100%":1108, "70%":776, "50%":554, "25%":277}, c:0.42},
-        {max: 2325000, h:{"100%":1154, "70%":8
+        <label>Tipo di Atto / Percentuale (dal Prontuario Completo)</label>
+        <select id="boxTipoAtto">
+            <optgroup label="Elenco Atti">
+                <option value="FISSO_37">Accettazione Espressa di Eredità (€ 37)</option>
+                <option value="25%">Assegnazione Alloggio da Cooperativa ERP (25%)</option>
+                <option value="FISSO_74">Atto d'Obbligo verso la P.A. (€ 74)</option>
+                <option value="FISSO_37">Atto di Asseverazione e Giuramento (€ 37)</option>
+                <option value="50%">Atto di Consenso alla Cancellazione di Ipoteca (50%)</option>
+                <option value="FISSO_37">Atto di Notorietà (€ 37)</option>
+                <option value="50%">Atto di Quietanza di Mutuo / Surroga (50%)</option>
+                <option value="FISSO_37">Atto di Ratifica o Conferma (€ 37)</option>
+                <option value="100%">Atto di Vincolo di Destinazione (100%)</option>
+                <option value="100%">Aumento di Capitale a Pagamento (100%)</option>
+                <option value="FISSO_11">Cancellazione Ipoteca su Autoveicolo (€ 11)</option>
+                <option value="70%">Compravendita Immobiliare Prezzo-Valore (70%)</option>
+                <option value="100%">Compravendita Immobiliare Standard / PEEP (100%)</option>
+                <option value="70%">Compravendita Nuda Proprietà Prezzo-Valore (70%)</option>
+                <option value="FISSO_37">Convenzione Scelta Regime Patrimoniale (€ 37)</option>
+                <option value="FISSO_186">Convenzione Urbanistica / Lottizzazione (€ 186)</option>
+                <option value="100%">Costituzione di Servitù Prediali (100%)</option>
+                <option value="100%">Costituzione di Società (Capitali o Persone) (100%)</option>
+                <option value="70%">Costituzione Usufrutto Prezzo-Valore (70%)</option>
+                <option value="FISSO_37">Deposito di Atto Estero (€ 37)</option>
+                <option value="100%">Divisione Immobiliare / di Eredità (100%)</option>
+                <option value="100%">Donazione di Azienda / Immobili (100%)</option>
+                <option value="FISSO_74">Fondo Patrimoniale tra Coniugi (€ 74)</option>
+                <option value="100%">Fusione per Incorporazione Società (100%)</option>
+                <option value="50%">Mutuo Agrario / Fondiario (50%)</option>
+                <option value="100%">Mutuo Ipotecario Ordinario (100%)</option>
+                <option value="100%">Permuta Immobiliare (100%)</option>
+                <option value="FISSO_19">Procura alle Liti / Speciale (€ 19)</option>
+                <option value="FISSO_37">Procura Generale ad Affari (€ 37)</option>
+                <option value="FISSO_37">Rettifica di Errore Materiale (€ 37)</option>
+                <option value="FISSO_12">Rilascio Copia Conforme / Estratto (€ 12)</option>
+                <option value="FISSO_
