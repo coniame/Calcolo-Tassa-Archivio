@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
-<meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Calcolo Tassa Archivio - Studio de Luca / Limosani</title>
@@ -17,14 +17,14 @@
         h2 { font-size: 0.85rem; margin: 5px 0 0 0; color: #444; font-family: "Times New Roman", Times, serif; font-weight: bold; line-height: 1.2; text-transform: uppercase; }
         
         .no-print label { display: block; margin-top: 8px; font-weight: 600; font-size: 0.7rem; color: #666; }
-        select, input { width: 100%; padding: 8px; margin-top: 3px; border: 1px solid #bbb; border-radius: 6px; font-size: 0.95rem; box-sizing: border-box; }
+        select, input { width: 100%; padding: 10px; margin-top: 3px; border: 1px solid #bbb; border-radius: 6px; font-size: 0.95rem; box-sizing: border-box; }
         
         .btn-forma { display: flex; gap: 5px; margin-top: 5px; }
         .btn-forma input { display: none; }
         .btn-forma label { flex: 1; background: #eee; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; border: 1px solid #ddd; }
         .btn-forma input:checked + label { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .calc-box { margin-top: 10px; border: 1px solid #ddd; padding: 10px; border-radius: 8px; background: #fff; flex-grow: 1; }
+        .calc-box { margin-top: 10px; border: 1px solid #ddd; padding: 12px; border-radius: 8px; background: #fff; flex-grow: 1; }
         .info-header { font-size: 0.75rem; color: #666; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 8px; text-transform: uppercase; }
         .onorario-label { color: var(--accent); font-weight: 900; text-align: center; margin-bottom: 10px; font-size: 0.9rem; }
         
@@ -34,8 +34,8 @@
         .grand-total { display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: 900; color: var(--accent); }
 
         .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        .share-btn { flex: 1; background: var(--dark-green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.8rem; }
-        .reset-btn { flex: 1; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.8rem; }
+        .share-btn { flex: 1; background: var(--dark-green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.8rem; height: 45px; }
+        .reset-btn { flex: 1; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.8rem; height: 45px; }
 
         footer { text-align: center; margin-top: auto; padding: 15px 0 5px 0; }
         .signature { font-size: 1.1rem; color: var(--sig-blue); font-style: italic; font-weight: bold; }
@@ -62,7 +62,7 @@
         </div>
 
         <label>Tipo di Atto / Percentuale</label>
-        <select id="tipoAttoBox">
+        <select id="boxTipoAtto">
             <optgroup label="Atti Prontuario">
                 <option value="FISSO_37">Accettazione Eredità (€ 37,00)</option>
                 <option value="25%">Assegnazione ERP (25%)</option>
@@ -76,7 +76,7 @@
                 <option value="100%">Mutuo Ipotecario Ordinario (100%)</option>
                 <option value="FISSO_186">Verbale Assemblea Straord. (€ 186,00)</option>
             </optgroup>
-            <optgroup label="Percentuali di Base">
+            <optgroup label="Aliquote Manuali">
                 <option value="100%">Misura Intera (100%)</option>
                 <option value="70%">Riduzione 70%</option>
                 <option value="50%">Riduzione 50%</option>
@@ -84,19 +84,19 @@
             </optgroup>
         </select>
 
-        <label>Valore Atto / Ipoteca (€)</label>
-        <input type="text" id="valoreInputBox" placeholder="es. 150.000">
+        <label id="lblVal">Valore Atto / Ipoteca (€)</label>
+        <input type="text" id="boxValoreInput" placeholder="es. 150.000">
     </div>
 
     <div class="calc-box">
-        <div id="titoloAttoUI" class="info-header">Configura i parametri</div>
-        <div id="onorarioUI" class="onorario-label"></div>
-        <div id="risultatiUI"></div>
+        <div id="boxHeaderUI" class="info-header">Configura i parametri</div>
+        <div id="boxOnorarioUI" class="onorario-label"></div>
+        <div id="boxRisultatiUI"></div>
     </div>
 
     <div class="btn-group no-print">
         <button class="share-btn" onclick="window.print()">CONDIVIDI PDF</button>
-        <button class="reset-btn" onclick="window.location.reload()">RESET CALCOLO</button>
+        <button class="reset-btn" onclick="pulisciTutto()">RESET CALCOLO</button>
     </div>
 
     <footer>
@@ -105,7 +105,7 @@
 </div>
 
 <script>
-    const DATI_PUBBLICI = [
+    const PUB = [
         {max: 37000, h:{"100%":275, "70%":193, "50%":138, "25%":69}, c:0.22},
         {max: 55800, h:{"100%":320, "70%":224, "50%":160, "25%":80}, c:0.42},
         {max: 74400, h:{"100%":354, "70%":248, "50%":177, "25%":89}, c:0.42},
@@ -131,7 +131,7 @@
         {max: Infinity, h:{"100%":1394, "70%":976, "50%":697, "25%":349}, c:0.42}
     ];
 
-    const DATI_PRIVATI = [
+    const PRIV = [
         {max: 37000, h:{"100%":261, "70%":183, "50%":131, "25%":65}, c:0.22},
         {max: 55800, h:{"100%":304, "70%":213, "50%":152, "25%":76}, c:0.42},
         {max: 74400, h:{"100%":336, "70%":235, "50%":168, "25%":84}, c:0.42},
@@ -157,84 +157,83 @@
         {max: Infinity, h:{"100%":1324, "70%":927, "50%":662, "25%":331}, c:0.42}
     ];
 
-    const inputArea = document.getElementById('valoreInputBox');
-    const selectArea = document.getElementById('tipoAttoBox');
-    const formattatoreEur = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
+    const inp = document.getElementById('boxValoreInputBox');
+    const sel = document.getElementById('boxTipoAtto');
+    const fmt = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
 
     function avviaCalcolo() {
-        const testoGrezzo = inputArea.value.replace(/\./g, "").replace(",", ".");
-        const valoreNumerico = parseFloat(testoGrezzo) || 0;
-        const tipoScelta = selectArea.value;
-        const ePubblico = document.getElementById('pub').checked;
-        const baseDati = ePubblico ? DATI_PUBBLICI : DATI_PRIVATI;
-
-        let quotaOnorario = 0;
-        let percentualeCassa = 0.42;
-
-        if (tipoScelta.startsWith("FISSO_")) {
-            quotaOnorario = parseInt(tipoScelta.split("_")[1]);
-        } else {
-            const scaglioneTrovato = baseDati.find(x => valoreNumerico <= x.max) || baseDati[baseDati.length-1];
-            quotaOnorario = scaglioneTrovato.h[tipoScelta] || 0;
-            percentualeCassa = scaglioneTrovato.c;
+        if (!inp.value || inp.value.trim() === "") {
+            document.getElementById('boxHeaderUI').textContent = "Attesa inserimento valore";
+            document.getElementById('boxOnorarioUI').textContent = "";
+            document.getElementById('boxRisultatiUI').innerHTML = "";
+            return;
         }
 
-        if (quotaOnorario > 0) {
-            // Calcolo matematico rigoroso arrotondato a due decimali
-            const tArchivio = Math.round(quotaOnorario * 0.10 * 100) / 100;
-            const cNaz = Math.round(quotaOnorario * percentualeCassa * 100) / 100;
-            const cCons = Math.round(quotaOnorario * 0.04 * 100) / 100;
-            const fGar = Math.round(quotaOnorario * 0.002 * 100) / 100;
-            const assic = Math.round(quotaOnorario * 0.06 * 100) / 100;
+        const raw = inp.value.replace(/\./g, "").replace(",", ".");
+        const val = parseFloat(raw) || 0;
+        const ePub = document.getElementById('pub').checked;
+        const db = ePub ? PUB : PRIV;
+        const scelta = sel.value;
 
-            // Totale A: Somma di tutte le tasse elencate
-            const totaleA = tArchivio + cNaz + cCons + fGar + assic;
-            
-            // Totale B (IVA): Calcolata su cassa, fondi e assicurazione (Tassa Archivio esclusa)
+        let onorario = 0;
+        let cPerc = 0.42;
+
+        if (scelta.startsWith("FISSO_")) {
+            onorario = parseInt(scelta.split("_")[1]);
+        } else {
+            const f = db.find(x => val <= x.max) || db[db.length-1];
+            onorario = f.h[scelta] || 0;
+            cPerc = f.c;
+        }
+
+        if (onorario > 0) {
+            const tArch = Math.round(onorario * 0.10 * 100) / 100;
+            const cNaz = Math.round(onorario * cPerc * 100) / 100;
+            const cCons = Math.round(onorario * 0.04 * 100) / 100;
+            const fGar = Math.round(onorario * 0.002 * 100) / 100;
+            const assic = Math.round(onorario * 0.06 * 100) / 100;
+
+            const totA = tArch + cNaz + cCons + fGar + assic;
             const baseIva = cNaz + cCons + fGar + assic;
             const ivaB = Math.round(baseIva * 0.22 * 100) / 100;
 
-            const nomeEtichetta = selectArea.options[selectArea.selectedIndex].parentElement.label === "Percentuali di Base" ? 
-                             "Percentuale di base: " + tipoScelta : selectArea.options[selectArea.selectedIndex].text;
+            const labelAtto = sel.options[sel.selectedIndex].parentElement.label === "Aliquote Manuali" ? 
+                             "Percentuale di base: " + scelta : sel.options[sel.selectedIndex].text;
 
-            document.getElementById('titoloAttoUI').textContent = nomeEtichetta;
-            document.getElementById('onorarioUI').textContent = "Onorario Repertorio: " + formattatoreEur.format(quotaOnorario);
+            document.getElementById('boxHeaderUI').textContent = labelAtto;
+            document.getElementById('boxOnorarioUI').textContent = "Onorario Repertorio: " + fmt.format(onorario);
             
-            // Stampa delle informazioni impilate
-            document.getElementById('risultatiUI').innerHTML = `
-                <div class="row"><span>Tassa Archivio (10%)</span><span>${formattatoreEur.format(tArchivio)}</span></div>
-                <div class="row"><span>Cassa Naz. Notariato (${(percentualeCassa*100).toFixed(0)}%)</span><span>${formattatoreEur.format(cNaz)}</span></div>
-                <div class="row"><span>Cassa Cons. Notariato (4%)</span><span>${formattatoreEur.format(cCons)}</span></div>
-                <div class="row"><span>Fondo Garanzia (0,20%)</span><span>${formattatoreEur.format(fGar)}</span></div>
-                <div class="row"><span>Assicurazione Obbligatoria (6%)</span><span>${formattatoreEur.format(assic)}</span></div>
-                
-                <div class="bold-row row"><span>A) - Totale Tasse e Contributi</span><span>${formattatoreEur.format(totaleA)}</span></div>
-                <div class="bold-row row"><span>B) - IVA al 22%</span><span>${formattatoreEur.format(ivaB)}</span></div>
-                
+            document.getElementById('boxRisultatiUI').innerHTML = `
+                <div class="row"><span>Tassa Archivio (10%)</span><span>${fmt.format(tArch)}</span></div>
+                <div class="row"><span>Cassa Naz. Notariato (${(cPerc*100).toFixed(0)}%)</span><span>${fmt.format(cNaz)}</span></div>
+                <div class="row"><span>Cassa Cons. Notariato (4%)</span><span>${fmt.format(cCons)}</span></div>
+                <div class="row"><span>Fondo Garanzia (0,20%)</span><span>${fmt.format(fGar)}</span></div>
+                <div class="row"><span>Assicurazione Obbligatoria (6%)</span><span>${fmt.format(assic)}</span></div>
+                <div class="bold-row row"><span>A) - Totale Imposte e Contributi</span><span>${fmt.format(totA)}</span></div>
+                <div class="bold-row row"><span>B) - IVA 22% (escl. Tassa Archivio)</span><span>${fmt.format(ivaB)}</span></div>
                 <div class="math-line"></div>
-                <div class="grand-total"><span>TOTALE (A + B)</span><span>${formattatoreEur.format(totaleA + ivaB)}</span></div>
+                <div class="grand-total"><span>TOTALE (A + B)</span><span>${fmt.format(totA + ivaB)}</span></div>
             `;
-        } else {
-            document.getElementById('titoloAttoUI').textContent = "Attesa inserimento valore";
-            document.getElementById('onorarioUI').textContent = "";
-            document.getElementById('risultatiUI').innerHTML = "";
         }
     }
 
-    // Gestione immissione formattata "Europea"
-    inputArea.addEventListener('input', function(e) {
-        let valorePuro = e.target.value.replace(/[^\d,]/g, ""); 
-        let parti = valorePuro.split(",");
-        parti[0] = parti[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        e.target.value = parti.join(",");
+    function pulisciTutto() {
+        inp.value = "";
+        sel.selectedIndex = 0;
+        avviaCalcolo();
+        inp.focus();
+    }
+
+    inp.addEventListener('input', function(e) {
+        let v = e.target.value.replace(/[^\d,]/g, ""); 
+        let pts = v.split(",");
+        pts[0] = pts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        e.target.value = pts.join(",");
         avviaCalcolo();
     });
 
-    selectArea.addEventListener('change', avviaCalcolo);
-    document.querySelectorAll('input[name="forma"]').forEach(radioBtn => radioBtn.addEventListener('change', avviaCalcolo));
-    
-    // Inizializza al caricamento
-    avviaCalcolo();
+    sel.addEventListener('change', avviaCalcolo);
+    document.querySelectorAll('input[name="forma"]').forEach(r => r.addEventListener('change', avviaCalcolo));
 </script>
 </body>
 </html>
