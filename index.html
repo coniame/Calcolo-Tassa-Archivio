@@ -28,10 +28,11 @@
         .info-header { font-size: 0.75rem; color: #666; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 8px; text-transform: uppercase; }
         .onorario-label { color: var(--accent); font-weight: 900; text-align: center; margin-bottom: 10px; font-size: 0.9rem; }
         
-        .row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.8rem; border-bottom: 1px solid #f2f2f2; }
-        .bold-row { font-weight: 800; font-size: 0.85rem; margin-top: 5px; color: #000; border-bottom: none; }
+        /* Struttura rigorosa: testo a sinistra, importo a destra */
+        .row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.75rem; border-bottom: 1px solid #f2f2f2; }
+        .bold-row { font-weight: 800; font-size: 0.78rem; margin-top: 5px; color: #000; border-bottom: none; }
         .math-line { border-top: 2px solid #000; margin: 10px 0 5px 0; }
-        .grand-total { display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: 900; color: var(--accent); }
+        .grand-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 900; color: var(--accent); }
 
         .btn-group { display: flex; gap: 10px; margin-top: 15px; }
         .share-btn { flex: 1; background: var(--dark-green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.8rem; height: 45px; }
@@ -133,6 +134,7 @@
 </div>
 
 <script>
+    // Database scaglioni esatti
     const PUB = [
         {max: 37000, h:{"100%":275, "70%":193, "50%":138, "25%":69}, c:0.22},
         {max: 55800, h:{"100%":320, "70%":224, "50%":160, "25%":80}, c:0.42},
@@ -185,123 +187,123 @@
         {max: Infinity, h:{"100%":1324, "70%":927, "50%":662, "25%":331}, c:0.42}
     ];
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const inp = document.getElementById('boxValoreInput');
-        const sel = document.getElementById('boxTipoAtto');
-        const headerUI = document.getElementById('boxHeaderUI');
-        const onorarioUI = document.getElementById('boxOnorarioUI');
-        const valoreImputatoUI = document.getElementById('boxValoreImputatoUI');
-        const risultatiUI = document.getElementById('boxRisultatiUI');
-        const pubRadio = document.getElementById('pub');
-        const lblVal = document.getElementById('lblVal');
-        
-        const fmt = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
+    // ESECUZIONE DIRETTA E IMMEDIATA DEL CODICE
+    const inp = document.getElementById('boxValoreInput');
+    const sel = document.getElementById('boxTipoAtto');
+    const headerUI = document.getElementById('boxHeaderUI');
+    const onorarioUI = document.getElementById('boxOnorarioUI');
+    const valoreImputatoUI = document.getElementById('boxValoreImputatoUI');
+    const risultatiUI = document.getElementById('boxRisultatiUI');
+    const pubRadio = document.getElementById('pub');
+    const lblVal = document.getElementById('lblVal');
+    
+    const fmt = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
 
-        function avviaCalcolo() {
-            if (!inp || !sel) return;
+    function avviaCalcolo() {
+        if (!inp || !sel) return;
 
-            if (inp.value.trim() === "") {
-                if (headerUI) headerUI.textContent = "Attesa inserimento valore";
-                if (onorarioUI) onorarioUI.textContent = "";
-                if (valoreImputatoUI) valoreImputatoUI.textContent = "";
-                if (risultatiUI) risultatiUI.innerHTML = "";
-                return;
-            }
-
-            const raw = inp.value.replace(/\./g, "").replace(",", ".");
-            const val = parseFloat(raw) || 0;
-            const ePub = pubRadio ? pubRadio.checked : true;
-            const db = ePub ? PUB : PRIV;
-            const scelta = sel.value;
-
-            let onorario = 0;
-            let cPerc = 0.42;
-
-            if (scelta.startsWith("FISSO_")) {
-                onorario = parseInt(scelta.split("_")[1]);
-                if (lblVal) lblVal.style.opacity = "0.3";
-            } else {
-                if (lblVal) lblVal.style.opacity = "1";
-                const f = db.find(x => val <= x.max) || db[db.length-1];
-                onorario = f.h[scelta] || 0;
-                cPerc = f.c;
-            }
-
-            if (onorario > 0) {
-                const tArch = Math.round(onorario * 0.10 * 100) / 100;
-                const cNaz = Math.round(onorario * cPerc * 100) / 100;
-                const cCons = Math.round(onorario * 0.04 * 100) / 100;
-                const fGar = Math.round(onorario * 0.002 * 100) / 100;
-                const assic = Math.round(onorario * 0.06 * 100) / 100;
-
-                const totA = tArch + cNaz + cCons + fGar + assic;
-                const baseIva = cNaz + cCons + fGar + assic;
-                const ivaB = Math.round(baseIva * 0.22 * 100) / 100;
-
-                const txtAtto = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
-                
-                const txtAttoLower = txtAtto.toLowerCase();
-                let etichettaValore = "Valore Euro: ";
-                
-                if (txtAttoLower.includes("compravendita")) {
-                    etichettaValore = "Prezzo Dichiarato in Atto euro: ";
-                } else if (txtAttoLower.includes("mutuo")) {
-                    etichettaValore = "Iscrizione ipotecaria per euro: ";
-                } else if (txtAttoLower.includes("donazione")) {
-                    etichettaValore = "Valore dichiarato nella donazione: ";
-                } else if (txtAttoLower.includes("divisione")) {
-                    etichettaValore = "Valore della MASSA DIVISIONALE euro: ";
-                } else if (txtAttoLower.includes("assegnazione")) {
-                    etichettaValore = "Prezzo di cessione euro: ";
-                }
-
-                if (headerUI) headerUI.textContent = txtAtto;
-                if (onorarioUI) onorarioUI.textContent = "Onorario Repertorio: " + fmt.format(onorario);
-                if (valoreImputatoUI) valoreImputatoUI.textContent = etichettaValore + inp.value;
-                
-                if (risultatiUI) risultatiUI.innerHTML = `
-                    <div class="row"><span>Tassa archivio (10%)</span><span>${fmt.format(tArch)}</span></div>
-                    <div class="row"><span>Cassa naz.notariato (${(cPerc*100).toFixed(0)}%)</span><span>${fmt.format(cNaz)}</span></div>
-                    <div class="row"><span>Cassa cons. notariato (4%)</span><span>${fmt.format(cCons)}</span></div>
-                    <div class="row"><span>Fondo garanzia (0,20%)</span><span>${fmt.format(fGar)}</span></div>
-                    <div class="row"><span>Assicur obbligatoria (6%)</span><span>${fmt.format(assic)}</span></div>
-                    
-                    <div class="bold-row row"><span>A) - Totale tasse e contributi</span><span>${fmt.format(totA)}</span></div>
-                    <div class="bold-row row"><span>B) - IVA al 22% (su Cassa e Fondi)</span><span>${fmt.format(ivaB)}</span></div>
-                    
-                    <div class="math-line"></div>
-                    <div class="grand-total"><span>TOTALE di A) + B)</span><span>${fmt.format(totA + ivaB)}</span></div>
-                `;
-            }
+        if (inp.value.trim() === "") {
+            if (headerUI) headerUI.textContent = "Attesa inserimento valore";
+            if (onorarioUI) onorarioUI.textContent = "";
+            if (valoreImputatoUI) valoreImputatoUI.textContent = "";
+            if (risultatiUI) risultatiUI.innerHTML = "";
+            return;
         }
 
-        function pulisciTutto() {
-            if (inp) {
-                inp.value = "";
-                inp.focus();
-            }
-            if (sel) sel.selectedIndex = 0;
-            avviaCalcolo();
+        const raw = inp.value.replace(/\./g, "").replace(",", ".");
+        const val = parseFloat(raw) || 0;
+        const ePub = pubRadio ? pubRadio.checked : true;
+        const db = ePub ? PUB : PRIV;
+        const scelta = sel.value;
+
+        let onorario = 0;
+        let cPerc = 0.42;
+
+        if (scelta.startsWith("FISSO_")) {
+            onorario = parseInt(scelta.split("_")[1]);
+            if (lblVal) lblVal.style.opacity = "0.3";
+        } else {
+            if (lblVal) lblVal.style.opacity = "1";
+            const f = db.find(x => val <= x.max) || db[db.length-1];
+            onorario = f.h[scelta] || 0;
+            cPerc = f.c;
         }
 
-        const btnStampa = document.getElementById('btnStampa');
-        const btnReset = document.getElementById('btnReset');
-        if (btnStampa) btnStampa.addEventListener('click', () => window.print());
-        if (btnReset) btnReset.addEventListener('click', pulisciTutto);
+        if (onorario > 0) {
+            const tArch = Math.round(onorario * 0.10 * 100) / 100;
+            const cNaz = Math.round(onorario * cPerc * 100) / 100;
+            const cCons = Math.round(onorario * 0.04 * 100) / 100;
+            const fGar = Math.round(onorario * 0.002 * 100) / 100;
+            const assic = Math.round(onorario * 0.06 * 100) / 100;
 
+            const totA = tArch + cNaz + cCons + fGar + assic;
+            const baseIva = cNaz + cCons + fGar + assic;
+            const ivaB = Math.round(baseIva * 0.22 * 100) / 100;
+
+            const txtAtto = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
+            
+            const txtAttoLower = txtAtto.toLowerCase();
+            let eticheVal = "Valore Euro: ";
+            
+            if (txtAttoLower.includes("compravendita")) {
+                eticheVal = "Prezzo Dichiarato in Atto euro: ";
+            } else if (txtAttoLower.includes("mutuo")) {
+                eticheVal = "Iscrizione ipotecaria per euro: ";
+            } else if (txtAttoLower.includes("donazione")) {
+                eticheVal = "Valore dichiarato nella donazione: ";
+            } else if (txtAttoLower.includes("divisione")) {
+                eticheVal = "Valore della MASSA DIVISIONALE euro: ";
+            } else if (txtAttoLower.includes("assegnazione")) {
+                eticheVal = "Prezzo di cessione euro: ";
+            }
+
+            if (headerUI) headerUI.textContent = txtAtto;
+            if (onorarioUI) onorarioUI.textContent = "Onorario Repertorio: " + fmt.format(onorario);
+            if (valoreImputatoUI) valoreImputatoUI.textContent = eticheVal + inp.value;
+            
+            // Diciture inserite in modo identico e testuale alla tua richiesta
+            if (risultatiUI) risultatiUI.innerHTML = `
+                <div class="row"><span>tassa archivio</span><span>${fmt.format(tArch)}</span></div>
+                <div class="row"><span>cassa naz.notariato</span><span>${fmt.format(cNaz)}</span></div>
+                <div class="row"><span>cassa cons. notariato</span><span>${fmt.format(cCons)}</span></div>
+                <div class="row"><span>fondo garanzia</span><span>${fmt.format(fGar)}</span></div>
+                <div class="row"><span>assicur obbligatoria</span><span>${fmt.format(assic)}</span></div>
+                
+                <div class="bold-row row"><span>A) - il totale dei valori dei campi sopra descritti</span><span>${fmt.format(totA)}</span></div>
+                <div class="bold-row row"><span>B) - l'IVA al 22% (sulla somma dei valori di "cassa naz.notariato", "cassa cons. notariato", "fondo garanzia" e "assicur obbligatoria")</span><span>${fmt.format(ivaB)}</span></div>
+                
+                <div class="math-line"></div>
+                <div class="grand-total"><span>TOTALE di A) + B)</span><span>${fmt.format(totA + ivaB)}</span></div>
+            `;
+        }
+    }
+
+    function pulisciTutto() {
         if (inp) {
-            inp.addEventListener('input', function(e) {
-                let v = e.target.value.replace(/[^\d,]/g, ""); 
-                let pts = v.split(",");
-                pts[0] = pts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                e.target.value = pts.join(",");
-                avviaCalcolo();
-            });
+            inp.value = "";
+            inp.focus();
         }
+        if (sel) sel.selectedIndex = 0;
+        avviaCalcolo();
+    }
 
-        if (sel) sel.addEventListener('change', avviaCalcolo);
-        document.querySelectorAll('input[name="forma"]').forEach(r => r.addEventListener('change', avviaCalcolo));
-    });
+    const btnStampa = document.getElementById('btnStampa');
+    const btnReset = document.getElementById('btnReset');
+    if (btnStampa) btnStampa.addEventListener('click', () => window.print());
+    if (btnReset) btnReset.addEventListener('click', pulisciTutto);
+
+    if (inp) {
+        inp.addEventListener('input', function(e) {
+            let v = e.target.value.replace(/[^\d,]/g, ""); 
+            let pts = v.split(",");
+            pts[0] = pts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            e.target.value = pts.join(",");
+            avviaCalcolo();
+        });
+    }
+
+    if (sel) sel.addEventListener('change', avviaCalcolo);
+    document.querySelectorAll('input[name="forma"]').forEach(r => r.addEventListener('change', avviaCalcolo));
 </script>
 </body>
 </html>
