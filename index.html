@@ -92,6 +92,7 @@
     <div class="calc-box">
         <div id="boxHeaderUI" class="info-header">Attesa inserimento valore</div>
         <div id="boxOnorarioUI" class="onorario-label"></div>
+        <div id="boxValoreImputatoUI" style="color: #444; font-weight: 800; text-align: center; margin-bottom: 12px; font-size: 0.85rem;"></div>
         <div id="boxRisultatiUI"></div>
     </div>
 
@@ -106,7 +107,6 @@
 </div>
 
 <script>
-    // Database scaglioni esatti
     const PUB = [
         {max: 37000, h:{"100%":275, "70%":193, "50%":138, "25%":69}, c:0.22},
         {max: 55800, h:{"100%":320, "70%":224, "50%":160, "25%":80}, c:0.42},
@@ -159,21 +159,21 @@
         {max: Infinity, h:{"100%":1324, "70%":927, "50%":662, "25%":331}, c:0.42}
     ];
 
-    // Tutte le chiamate JS sono incapsulate qui dentro per non bloccarsi
     document.addEventListener("DOMContentLoaded", function() {
         const inp = document.getElementById('boxValoreInput');
         const sel = document.getElementById('boxTipoAtto');
         const headerUI = document.getElementById('boxHeaderUI');
         const onorarioUI = document.getElementById('boxOnorarioUI');
+        const valoreImputatoUI = document.getElementById('boxValoreImputatoUI');
         const risultatiUI = document.getElementById('boxRisultatiUI');
         
         const fmt = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
 
         function avviaCalcolo() {
-            // Se la casella è vuota, pulisce tutto e si ferma.
             if (!inp.value || inp.value.trim() === "") {
                 headerUI.textContent = "Attesa inserimento valore";
                 onorarioUI.textContent = "";
+                valoreImputatoUI.textContent = "";
                 risultatiUI.innerHTML = "";
                 return;
             }
@@ -204,60 +204,15 @@
                 const fGar = Math.round(onorario * 0.002 * 100) / 100;
                 const assic = Math.round(onorario * 0.06 * 100) / 100;
 
-                // A) - TOTALE DEI VALORI DEI CAMPI SOPRA DESCRITTI
                 const totA = tArch + cNaz + cCons + fGar + assic;
-                
-                // B) - L'IVA AL 22% (ESCLUSA TASSA ARCHIVIO)
                 const baseIva = cNaz + cCons + fGar + assic;
                 const ivaB = Math.round(baseIva * 0.22 * 100) / 100;
 
                 const txtAtto = sel.options[sel.selectedIndex].text;
-
-                headerUI.textContent = txtAtto;
-                onorarioUI.textContent = "Onorario Repertorio: " + fmt.format(onorario);
                 
-                // IMPAGINAZIONE RICHIESTA (Impilate con A e B in grassetto + linea addizione)
-                risultatiUI.innerHTML = `
-                    <div class="row"><span>Tassa archivio (10%)</span><span>${fmt.format(tArch)}</span></div>
-                    <div class="row"><span>Cassa naz.notariato (${(cPerc*100).toFixed(0)}%)</span><span>${fmt.format(cNaz)}</span></div>
-                    <div class="row"><span>Cassa cons. notariato (4%)</span><span>${fmt.format(cCons)}</span></div>
-                    <div class="row"><span>Fondo garanzia (0,20%)</span><span>${fmt.format(fGar)}</span></div>
-                    <div class="row"><span>Assicur obbligatoria (6%)</span><span>${fmt.format(assic)}</span></div>
-                    
-                    <div class="bold-row row"><span>A) - Totale tasse e contributi</span><span>${fmt.format(totA)}</span></div>
-                    <div class="bold-row row"><span>B) - IVA al 22% (su Cassa e Fondi)</span><span>${fmt.format(ivaB)}</span></div>
-                    
-                    <div class="math-line"></div>
-                    <div class="grand-total"><span>TOTALE di A) + B)</span><span>${fmt.format(totA + ivaB)}</span></div>
-                `;
-            }
-        }
-
-        // Sistema di reset implacabile che svuota la casella e il programma
-        function pulisciTutto() {
-            inp.value = "";
-            sel.selectedIndex = 0;
-            avviaCalcolo();
-            inp.focus();
-        }
-
-        // Collega i pulsanti html alle funzioni javascript
-        document.getElementById('btnStampa').addEventListener('click', () => window.print());
-        document.getElementById('btnReset').addEventListener('click', pulisciTutto);
-
-        // Sistema punti migliaia
-        inp.addEventListener('input', function(e) {
-            let v = e.target.value.replace(/[^\d,]/g, ""); 
-            let pts = v.split(",");
-            pts[0] = pts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            e.target.value = pts.join(",");
-            avviaCalcolo();
-        });
-
-        // Avvia il calcolo quando si premono i menu
-        sel.addEventListener('change', avviaCalcolo);
-        document.querySelectorAll('input[name="forma"]').forEach(r => r.addEventListener('change', avviaCalcolo));
-    });
-</script>
-</body>
-</html>
+                // --- INIZIO LOGICA ETICHETTA VALORE DINAMICA ---
+                const txtAttoLower = txtAtto.toLowerCase();
+                let etichettaValore = "Valore Euro: ";
+                
+                if (txtAttoLower.includes("compravendita")) {
+                    etichettaValore = "Prezzo Dichiar
